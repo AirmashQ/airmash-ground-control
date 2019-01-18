@@ -4,7 +4,9 @@
 mod logging;
 
 mod commands;
+mod map;
 mod server;
+mod types;
 mod wing;
 
 use airmash_client::Client;
