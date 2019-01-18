@@ -65,8 +65,8 @@ impl MapPosition {
 
 impl From<Position> for MapPosition {
     fn from(pos: Position) -> MapPosition {
-        let x = (((pos.x.inner() + BOUNDARY_X) / 64.0).abs().max(0.0) as isize).min(MAP_MAX_X);
-        let y = (((pos.y.inner() + BOUNDARY_Y) / 64.0).abs().max(0.0) as isize).min(MAP_MAX_Y);
+        let x = (((pos.x.inner() + BOUNDARY_X) / 64.0).abs().max(0.0) as isize).min(MAP_MAX_X - 1);
+        let y = (((pos.y.inner() + BOUNDARY_Y) / 64.0).abs().max(0.0) as isize).min(MAP_MAX_Y - 1);
 
         MapPosition::new(x, y)
     }
