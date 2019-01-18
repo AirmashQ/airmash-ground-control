@@ -1,5 +1,7 @@
 ## AIRMASH Ground Control
 
+[![Build Status](https://travis-ci.org/AirmashPewPewPew/airmash-ground-control.svg?branch=master)](https://travis-ci.org/AirmashPewPewPew/airmash-ground-control)
+
 Ground Control is an AIRMASH bot that sends wingmen to attack you. She's controlled through a chat interface. Ask her for help with `--gc-help`.
 
 Let's get to it: request 3 wingmen from Ground Control with `--gc-wings 3`. You can request up to 5 wingmen to attack you. The wingmen are pretty dumb, always flying right to you, always shooting, and always predators. When you're done fighting your wingmen, say `--gc-call-off` to call them off your tail.
