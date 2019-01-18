@@ -14,4 +14,6 @@ RUN mv target/x86_64-unknown-linux-musl/release/airmash-ground-control /artifact
 FROM alpine:3.8
 COPY --from=0 /artifacts/airmash-ground-control /airmash-ground-control
 ENV RUST_LOG="airmash_ground_control=info"
-ENTRYPOINT ["./airmash-ground-control", "wss://us.airmash.online/ffa2", "wss://eu.airmash.online/ffa2"]
+
+ENTRYPOINT ["./airmash-ground-control"]
+CMD ["wss://us.airmash.online/ffa2", "wss://eu.airmash.online/ffa2"]
