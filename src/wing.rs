@@ -16,6 +16,8 @@ use url::Url;
 
 use crate::types::MapPosition;
 
+const MIN_FIRE_DIST: f32 = 500.0;
+
 /// Flag used to shutdown a wingman's event loop
 #[derive(Clone)]
 pub struct Flag {
@@ -107,6 +109,14 @@ impl Wingman {
             } else {
                 break;
             }
+
+            // Fire when close to the target.
+            let mut fire = if (pos - client.world.get_me().pos).length().inner() < MIN_FIRE_DIST {
+                true
+            } else {
+                false
+            };
+
             if time::Instant::now() - prev > time::Duration::from_millis(500) {
                 await!(client.press_key(protocol::KeyCode::Up))?;
                 prev = time::Instant::now();
@@ -132,6 +142,9 @@ impl Wingman {
                 // Only use pathfinding if there's an obstacle (mountain) between us and
                 // the target.
                 if let Some(ob_map_pos) = src_map_pos.obstacle_between(dst_map_pos) {
+                    // Don't fire if don't have line-of-sight.
+                    fire = false;
+
                     // Make sure the obstacle is near, otherwise we can just head in its
                     // direction.
                     // Distance is in map units (1 = 64 world units), so this is taking us within
@@ -153,7 +166,13 @@ impl Wingman {
             }
 
             await!(client.point_at(pos))?;
-            await!(client.press_key(protocol::KeyCode::Fire))?;
+
+            if fire {
+                await!(client.press_key(protocol::KeyCode::Fire))?;
+            } else {
+                await!(client.release_key(protocol::KeyCode::Fire))?;
+            }
+
             await!(client.wait(time::Duration::from_millis(u64::from(
                 (client.world.ping * 2).min(1000).max(10)
             ))))?;
