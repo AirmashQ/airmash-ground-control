@@ -114,32 +114,39 @@ impl Wingman {
 
             let src_map_pos: MapPosition = client.world.get_me().pos.into();
             let mut dst_map_pos: MapPosition = pos.into();
+            let mut pathfinding_enabled = true;
 
             // astar will search the entire map if the destination is occupied so pick
             // a free adjacent position.
             if dst_map_pos.is_occupied() {
-                if let Some(p) = dst_map_pos.adjacent_positions().get(0) {
-                    dst_map_pos = *p;
+                if let Some(p) = dst_map_pos.adjacent_positions().next() {
+                    dst_map_pos = p;
+                } else {
+                    // Couldn't find an unoccupied position on the map, so disable
+                    // pathfinding so the cpu doesn't spike.
+                    pathfinding_enabled = false;
                 }
             }
 
-            // Only use pathfinding if there's an obstacle (mountain) between us and
-            // the target.
-            if let Some(ob_map_pos) = src_map_pos.obstacle_between(dst_map_pos) {
-                // Make sure the obstacle is near, otherwise we can just head in its
-                // direction.
-                // Distance is in map units (1 = 64 world units), so this is taking us within
-                // 960 of the obstacle.
-                if ob_map_pos.distance(src_map_pos) < 16 {
-                    let path_positions = astar(
-                        &src_map_pos,
-                        |p| p.adjacent_positions().into_iter().map(|pp| (pp, 1)),
-                        |p| p.distance(dst_map_pos),
-                        |p| p.x == dst_map_pos.x && p.y == dst_map_pos.y,
-                    );
-                    if let Some((positions, _)) = path_positions {
-                        if let Some(p) = positions.get(1) {
-                            pos = (*p).into();
+            if pathfinding_enabled {
+                // Only use pathfinding if there's an obstacle (mountain) between us and
+                // the target.
+                if let Some(ob_map_pos) = src_map_pos.obstacle_between(dst_map_pos) {
+                    // Make sure the obstacle is near, otherwise we can just head in its
+                    // direction.
+                    // Distance is in map units (1 = 64 world units), so this is taking us within
+                    // 960 of the obstacle.
+                    if ob_map_pos.distance(src_map_pos) < 16 {
+                        let path_positions = astar(
+                            &src_map_pos,
+                            |p| p.adjacent_positions().into_iter().map(|pp| (pp, 1)),
+                            |p| p.distance(dst_map_pos),
+                            |p| p.x == dst_map_pos.x && p.y == dst_map_pos.y,
+                        );
+                        if let Some((positions, _)) = path_positions {
+                            if let Some(p) = positions.get(1) {
+                                pos = (*p).into();
+                            }
                         }
                     }
                 }

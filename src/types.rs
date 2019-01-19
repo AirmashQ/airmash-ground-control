@@ -44,22 +44,8 @@ impl MapPosition {
         absdiff(self.x, other.x) + absdiff(self.y, other.y)
     }
 
-    /// Construct a vector of unoccupied adjacent positions.
-    pub fn adjacent_positions(self) -> Vec<MapPosition> {
-        let mut positions = Vec::new();
-
-        for y in self.y - 1..=self.y + 1 {
-            for x in self.x - 1..=self.x + 1 {
-                if !(x == self.x && y == self.y) {
-                    let pos = MapPosition::new(x, y);
-                    if !pos.is_occupied() {
-                        positions.push(pos);
-                    }
-                }
-            }
-        }
-
-        positions
+    pub fn adjacent_positions(self) -> impl Iterator<Item = MapPosition> {
+        UnoccupiedMapPositionIter::new(self)
     }
 }
 
@@ -90,5 +76,50 @@ impl From<MapPosition> for Position {
             (pos.x * 64) as f32 + 32.0 - BOUNDARY_X,
             (pos.y * 64) as f32 + 32.0 - BOUNDARY_Y,
         )
+    }
+}
+
+struct UnoccupiedMapPositionIter {
+    origin: MapPosition,
+    x: isize,
+    y: isize,
+}
+
+impl UnoccupiedMapPositionIter {
+    pub fn new(origin: MapPosition) -> UnoccupiedMapPositionIter {
+        UnoccupiedMapPositionIter {
+            origin,
+            x: origin.x - 1,
+            y: origin.y - 1,
+        }
+    }
+}
+
+impl Iterator for UnoccupiedMapPositionIter {
+    type Item = MapPosition;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        loop {
+            let x = self.x;
+            let y = self.y;
+
+            self.x += 1;
+
+            if !(x == self.origin.x && y == self.origin.y) {
+                if x <= self.origin.x + 1 {
+                    if y <= self.origin.y + 1 {
+                        let pos = MapPosition::new(x, y);
+                        if !pos.is_occupied() {
+                            return Some(pos);
+                        }
+                    } else {
+                        return None;
+                    }
+                } else {
+                    self.x = self.origin.x - 1;
+                    self.y += 1;
+                }
+            }
+        }
     }
 }
