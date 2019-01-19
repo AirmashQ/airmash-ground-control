@@ -7,7 +7,7 @@ edition = "2018"
 [dependencies]
 airmash-client = { git = "https://github.com/steamroller-airmash/airmash-client.git" }
 # Need to patch for airmash-client build? Why aren't the patches respected in the airmash-client crate?
-airmash-protocol = "0.2" 
+airmash-protocol = "0.3" 
 airmash-protocol-v5 = "0.0" # See above...
 clap = "2.32"
 env_logger = "0.6"
@@ -15,8 +15,3 @@ futures = "0.1"
 log = "0.4"
 tokio = { version = "0.1", features = ["async-await-preview"] }
 url = "1.7"
-
-[patch.crates-io]
-airmash-protocol = { git = "https://github.com/steamroller-airmash/airmash-protocol-rs" }
-airmash-protocol-v5 = { git = "https://github.com/steamroller-airmash/airmash-protocol-v5" }
-tokio-async-await = { git = "https://github.com/tokio-rs/tokio" }
