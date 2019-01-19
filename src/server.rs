@@ -11,7 +11,7 @@ use crate::commands;
 use crate::commands::ControlTower;
 use crate::wing;
 
-use airmash_client::{Client, ClientEvent};
+use airmash_client::{ClientBase, ClientEvent};
 use airmash_protocol as protocol;
 
 use std::collections::HashMap;
@@ -23,7 +23,7 @@ use url::Url;
 /// loop, handling client messages
 pub struct Server {
     /// Client connection
-    client: Client,
+    client: ClientBase,
     /// The control tower that handles wingmen commands and
     /// responses
     tower: ControlTower,
@@ -41,7 +41,7 @@ impl Server {
     ///
     /// If the server should announce itself to new players, set `announce` to `true`.
     /// Announcing mostly means that we will tell them about the help command.
-    pub fn new(url: Url, client: Client, max_wingmen: u8, announce: bool) -> Self {
+    pub fn new(url: Url, client: ClientBase, max_wingmen: u8, announce: bool) -> Self {
         Server {
             client,
             tower: ControlTower::new(max_wingmen),
