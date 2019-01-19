@@ -6,7 +6,7 @@
 //! Right now, the wingman simply follows and shoots a player.
 //! It's really dumb...
 
-use airmash_client::Client;
+use airmash_client::{Client, ClientBase};
 use airmash_protocol as protocol;
 
 use std::sync::{atomic, Arc};
@@ -87,7 +87,7 @@ impl Wingman {
     }
 
     async fn follow(
-        mut client: Client,
+        mut client: ClientBase,
         player: u16,
         shutdown: Flag,
     ) -> airmash_client::ClientResult<()> {
@@ -111,9 +111,8 @@ impl Wingman {
 
             await!(client.point_at(pos))?;
             await!(client.press_key(protocol::KeyCode::Fire))?;
-            await!(client.wait(time::Duration::from_millis(u64::from(
-                (client.world.ping * 2).min(1000).max(10)
-            ))))?;
+            let delay_time = u64::from((client.world.ping * 2).min(1000).max(10));
+            await!(client.wait(time::Duration::from_millis(delay_time)))?;
         }
 
         await!(client.release_key(protocol::KeyCode::Up))
